@@ -8,17 +8,30 @@
     --border-color: #e2e8f0;
 
     --success: #10b981;
-    --success-light: #d1fae5;
     --danger: #ef4444;
-    --danger-light: #fee2e2;
 
     --city-default: #cbd5e1;
+    --city-stroke: #ffffff;
     --city-hover: #60a5fa;
     --city-correct: #10b981;
     --city-wrong: #ef4444;
 
     --radius: 16px;
-    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+/* --- KARANLIK MOD DEĞİŞKENLERİ --- */
+:root[data-theme="dark"] {
+    --bg-main: #0f172a;
+    --card-bg: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+
+    --city-default: #334155;
+    --city-stroke: #1e293b;
+    --city-hover: #3b82f6;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -26,6 +39,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 body {
@@ -40,7 +54,7 @@ body {
 .navbar {
     background: var(--card-bg);
     border-bottom: 1px solid var(--border-color);
-    padding: 1rem 2rem;
+    padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -49,10 +63,11 @@ body {
     z-index: 50;
 }
 
-.navbar-left {
+.navbar-left,
+.navbar-right {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .menu-button {
@@ -72,25 +87,35 @@ body {
 .logo {
     text-decoration: none;
     font-weight: 800;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     color: var(--text-main);
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
+/* Dark Mode & GitHub Nav Butonları */
+.theme-toggle-btn,
+.github-nav-btn,
 .restart-btn {
     background-color: var(--bg-main);
     border: 1px solid var(--border-color);
-    padding: 0.5rem 1rem;
+    color: var(--text-main);
+    padding: 0.5rem 0.8rem;
     border-radius: 8px;
     font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
 }
 
+.theme-toggle-btn:hover,
+.github-nav-btn:hover,
 .restart-btn:hover {
-    background-color: #e2e8f0;
+    border-color: var(--primary);
 }
 
 /* --- SIDEBAR & OVERLAY --- */
@@ -101,7 +126,7 @@ body {
     width: 300px;
     height: 100%;
     background: var(--card-bg);
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
     z-index: 100;
     transition: left 0.3s ease;
     padding: 1.5rem;
@@ -143,23 +168,22 @@ body {
     color: var(--text-muted);
     font-weight: 600;
     border-radius: 10px;
-    transition: all 0.2s;
 }
 
 .nav-item.active {
-    background-color: #eff6ff;
-    color: var(--primary);
+    background-color: var(--primary);
+    color: #ffffff;
 }
 
 .nav-item.disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
 .nav-item .badge {
     margin-left: auto;
     font-size: 0.7rem;
-    background: #e2e8f0;
+    background: var(--border-color);
     padding: 0.2rem 0.5rem;
     border-radius: 12px;
 }
@@ -170,7 +194,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 90;
     display: none;
 }
@@ -259,8 +283,6 @@ body {
     text-align: center;
     margin-bottom: 2rem;
     box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
-    position: relative;
-    overflow: hidden;
 }
 
 .question-badge {
@@ -270,19 +292,11 @@ body {
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 0.5rem;
 }
 
 .question-card h2 {
     font-size: 2.5rem;
     font-weight: 800;
-    margin-bottom: 0.2rem;
-}
-
-.question-card p {
-    font-size: 1rem;
-    opacity: 0.9;
 }
 
 /* --- MAP --- */
@@ -295,7 +309,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 400px;
 }
 
 #map-container {
@@ -308,13 +321,13 @@ body {
     max-height: 550px;
 }
 
-/* SVG İlleri Stillendirme */
+/* SVG Şehir Yolları */
 .turkey-map path,
 .turkey-map g {
     fill: var(--city-default);
-    stroke: #ffffff;
+    stroke: var(--city-stroke);
     stroke-width: 1;
-    transition: fill 0.2s ease, transform 0.2s ease;
+    transition: fill 0.15s ease;
     cursor: pointer;
 }
 
@@ -323,16 +336,16 @@ body {
     fill: var(--city-hover) !important;
 }
 
-/* Yanlış / Doğru Animasyon Sınıfları */
 .turkey-map path.correct,
 .turkey-map g.correct {
     fill: var(--city-correct) !important;
 }
 
+/* Hızlandırılmış Yanlış Animasyonu (0.2s Shake) */
 .turkey-map path.wrong,
 .turkey-map g.wrong {
     fill: var(--city-wrong) !important;
-    animation: shake 0.4s ease;
+    animation: shake 0.2s linear;
 }
 
 @keyframes shake {
@@ -342,52 +355,26 @@ body {
         transform: translateX(0);
     }
 
-    20%,
-    60% {
-        transform: translateX(-4px);
+    25% {
+        transform: translateX(-3px);
     }
 
-    40%,
-    80% {
-        transform: translateX(4px);
+    75% {
+        transform: translateX(3px);
     }
 }
 
-/* SVG Şehir İsmi Yazıları (İsteğe bağlı görünür kılınanlar) */
-.turkey-map text {
-    fill: #ffffff;
-    font-size: 10px;
-    font-weight: bold;
-    pointer-events: none;
+/* HARİTA ÜZERİNE DİNAMİK EKLENEN ŞEHİR YAZILARI */
+.city-label-text {
+    fill: #ffffff !important;
+    font-size: 9px;
+    font-weight: 800;
     text-anchor: middle;
-}
-
-/* MAP LOADING & ERROR */
-.map-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    color: var(--text-muted);
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--border-color);
-    border-top: 4px solid var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+    dominant-baseline: central;
+    pointer-events: none;
+    /* Tıklamayı arkadaki şehre geçirir */
+    user-select: none;
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 /* TOAST MESSAGE */
@@ -395,14 +382,14 @@ body {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    padding: 1rem 1.5rem;
+    padding: 0.8rem 1.2rem;
     border-radius: 12px;
     font-weight: 700;
     color: white;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     pointer-events: none;
     z-index: 1000;
 }
@@ -436,4 +423,5 @@ body {
 .footer a {
     color: var(--primary);
     text-decoration: none;
+    font-weight: 600;
 }

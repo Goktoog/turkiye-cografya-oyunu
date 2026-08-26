@@ -47,22 +47,14 @@ const CITIES = [
     { id: "TR81", name: "Düzce" }
 ];
 
-/*
-|--------------------------------------------------------------------------
-| OYUN DURUMU (STATE)
-|--------------------------------------------------------------------------
-*/
+/* OYUN DURUMU */
 let remainingCities = [];
 let currentTargetCity = null;
 let correctCount = 0;
 let wrongCount = 0;
 let isClickable = true;
 
-/*
-|--------------------------------------------------------------------------
-| DOM ELEMANLARI
-|--------------------------------------------------------------------------
-*/
+/* DOM ELEMANLARI */
 const mapContainer = document.getElementById("map-container");
 const menuButton = document.getElementById("menuButton");
 const closeMenuButton = document.getElementById("closeMenuButton");
@@ -76,90 +68,84 @@ const successRateEl = document.getElementById("successRate");
 const gameMessageEl = document.getElementById("gameMessage");
 const restartBtn = document.getElementById("restartBtn");
 
-/*
-|--------------------------------------------------------------------------
-| SIDEBAR KONTROLÜ
-|--------------------------------------------------------------------------
-*/
-function openMenu() {
-    sidebar.classList.add("open");
-    overlay.classList.add("open");
-}
-function closeMenu() {
-    sidebar.classList.remove("open");
-    overlay.classList.remove("open");
+/* KARANLIK MOD KONTROLÜ */
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+const themeIcon = document.getElementById("themeIcon");
+
+function initTheme() {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    themeIcon.textContent = savedTheme === "dark" ? "☀️" : "🌙";
 }
 
-menuButton.addEventListener("click", openMenu);
-closeMenuButton.addEventListener("click", closeMenu);
-overlay.addEventListener("click", closeMenu);
+themeToggleBtn.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+    themeIcon.textContent = newTheme === "dark" ? "☀️" : "🌙";
+});
+
+initTheme();
+
+/* SIDEBAR KONTROLÜ */
+menuButton.addEventListener("click", () => { sidebar.classList.add("open"); overlay.classList.add("open"); });
+closeMenuButton.addEventListener("click", () => { sidebar.classList.remove("open"); overlay.classList.remove("open"); });
+overlay.addEventListener("click", () => { sidebar.classList.remove("open"); overlay.classList.remove("open"); });
 restartBtn.addEventListener("click", resetGame);
 
-/*
-|--------------------------------------------------------------------------
-| HARİTA YÜKLEME VE KURULUM
-|--------------------------------------------------------------------------
-*/
+/* HARİTA YÜKLEME */
 async function loadMap() {
     try {
         const response = await fetch("assets/turkey.svg");
-        if (!response.ok) throw new Error("SVG dosyası yüklenemedi.");
+        if (!response.ok) throw new Error("SVG yüklenemedi.");
 
         const svgText = await response.text();
         mapContainer.innerHTML = svgText;
 
         const svg = mapContainer.querySelector("svg");
-        if (!svg) throw new Error("SVG formatı hatalı.");
+        if (!svg) throw new Error("SVG bulunamadı.");
 
         svg.classList.add("turkey-map");
-
-        // Şehir tıklamalarını hazırla ve oyunu başlat
         initGame();
 
     } catch (error) {
         console.error(error);
-        mapContainer.innerHTML = `<div class="map-error">❌ Harita yüklenirken hata oluştu! "assets/turkey.svg" dosyasını kontrol edin.</div>`;
+        mapContainer.innerHTML = `<div style="text-align:center; padding:50px; color:red;">Harita yüklenemedi.</div>`;
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| OYUN MANTIĞI
-|--------------------------------------------------------------------------
-*/
 function initGame() {
     remainingCities = [...CITIES];
     correctCount = 0;
     wrongCount = 0;
     updateStats();
-
-    // Haritadaki path'lere isim ve olay dinleyicisi ekle
     bindMapEvents();
-
-    // İlk soruyu sor
     nextQuestion();
 }
 
 function resetGame() {
-    // Haritada yeşil kalan tüm illeri sıfırla
+    const svg = mapContainer.querySelector("svg");
     const svgPaths = mapContainer.querySelectorAll("path, g");
-    svgPaths.forEach(el => {
-        el.classList.remove("correct", "wrong");
-    });
+
+    // Rengi sıfırla
+    svgPaths.forEach(el => el.classList.remove("correct", "wrong"));
+
+    // Eklenen şehir metinlerini temizle
+    const addedLabels = svg.querySelectorAll(".city-label-text");
+    addedLabels.forEach(lbl => lbl.remove());
 
     initGame();
-    showMessage("Oyun sıfırlandı. Başarılar!", "correct-toast");
+    showMessage("Oyun sıfırlandı!", "correct-toast");
 }
 
 function bindMapEvents() {
     const paths = mapContainer.querySelectorAll("path, g");
 
     paths.forEach(element => {
-        // Element'in ID veya isim özelliklerini yakala
         const elementId = element.getAttribute("id") || "";
         const dataName = element.getAttribute("data-name") || element.getAttribute("title") || "";
 
-        // Şehir nesnemizi bulalım
         let matchedCity = CITIES.find(c =>
             c.id.toLowerCase() === elementId.toLowerCase() ||
             turkishSlug(c.name) === turkishSlug(dataName) ||
@@ -169,7 +155,6 @@ function bindMapEvents() {
         if (matchedCity) {
             element.setAttribute("data-city-id", matchedCity.id);
             element.setAttribute("data-city-name", matchedCity.name);
-
             element.addEventListener("click", () => handleCityClick(element, matchedCity));
         }
     });
@@ -177,13 +162,12 @@ function bindMapEvents() {
 
 function nextQuestion() {
     if (remainingCities.length === 0) {
-        questionEl.textContent = "🎉 TEBRİKLER! TÜM İLLERİ BİLDİNİZ!";
-        showMessage("Tebrikler, haritadaki tüm illeri tamamladınız!", "correct-toast");
+        questionEl.textContent = "🎉 TÜM İLLERİ BİLDİNİZ!";
+        showMessage("Tebrikler, oyunu başarıyla tamamladınız!", "correct-toast");
         currentTargetCity = null;
         return;
     }
 
-    // Rastgele bir şehir seç
     const randomIndex = Math.floor(Math.random() * remainingCities.length);
     currentTargetCity = remainingCities[randomIndex];
     questionEl.textContent = currentTargetCity.name;
@@ -192,8 +176,6 @@ function nextQuestion() {
 
 function handleCityClick(element, clickedCity) {
     if (!currentTargetCity || !isClickable) return;
-
-    // Şehir zaten önceden bilindiyse tıklamayı pas geç
     if (element.classList.contains("correct")) return;
 
     if (clickedCity.id === currentTargetCity.id) {
@@ -202,15 +184,14 @@ function handleCityClick(element, clickedCity) {
         correctCount++;
         element.classList.add("correct");
 
-        // Doğru bilinen şehri listeden çıkar
-        remainingCities = remainingCities.filter(c => c.id !== currentTargetCity.id);
+        // HARİTA ÜZERİNE ŞEHİR İSMİNİ YAZMA
+        addCityLabelToMap(element, clickedCity.name);
 
-        showMessage(`Harika! Doğru cevap: ${clickedCity.name} 👏`, "correct-toast");
+        remainingCities = remainingCities.filter(c => c.id !== currentTargetCity.id);
+        showMessage(`Doğru: ${clickedCity.name} 👏`, "correct-toast");
         updateStats();
 
-        setTimeout(() => {
-            nextQuestion();
-        }, 1000);
+        setTimeout(() => { nextQuestion(); }, 600);
 
     } else {
         // YANLIŞ CEVAP
@@ -218,14 +199,35 @@ function handleCityClick(element, clickedCity) {
         wrongCount++;
         element.classList.add("wrong");
 
-        showMessage(`Yanlış! Tıkladığınız yer: ${clickedCity.name} ❌`, "wrong-toast");
+        showMessage(`Yanlış! (${clickedCity.name}) ❌`, "wrong-toast");
         updateStats();
 
-        // Yanlış efekti kaldır (Kırmızı yanıp söner ve silinir)
+        // 300 ms sonra animasyon sıfırlanır (Seri tıklama imkanı)
         setTimeout(() => {
             element.classList.remove("wrong");
             isClickable = true;
-        }, 1200);
+        }, 300);
+    }
+}
+
+// ŞEHRİN MERKEZİNE YAZI EKLEME FONKSİYONU
+function addCityLabelToMap(element, cityName) {
+    try {
+        const svg = mapContainer.querySelector("svg");
+        const bbox = element.getBBox(); // Şehrin koordinatlarını al
+
+        const centerX = bbox.x + bbox.width / 2;
+        const centerY = bbox.y + bbox.height / 2;
+
+        const textNode = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        textNode.setAttribute("x", centerX);
+        textNode.setAttribute("y", centerY);
+        textNode.setAttribute("class", "city-label-text");
+        textNode.textContent = cityName;
+
+        svg.appendChild(textNode);
+    } catch (e) {
+        console.log("Metin ekleme hatası:", e);
     }
 }
 
@@ -233,45 +235,25 @@ function updateStats() {
     correctCountEl.textContent = correctCount;
     wrongCountEl.textContent = wrongCount;
     remainingCountEl.textContent = remainingCities.length;
-
     const total = correctCount + wrongCount;
     const rate = total === 0 ? 0 : Math.round((correctCount / total) * 100);
     successRateEl.textContent = `${rate}%`;
 }
 
-/*
-|--------------------------------------------------------------------------
-| BİLDİRİM KUTUSU (TOAST)
-|--------------------------------------------------------------------------
-*/
 let toastTimeout;
 function showMessage(msg, typeClass) {
     clearTimeout(toastTimeout);
     gameMessageEl.textContent = msg;
     gameMessageEl.className = `game-message show ${typeClass}`;
-
-    toastTimeout = setTimeout(() => {
-        gameMessageEl.classList.remove("show");
-    }, 2500);
+    toastTimeout = setTimeout(() => { gameMessageEl.classList.remove("show"); }, 1500);
 }
 
-/*
-|--------------------------------------------------------------------------
-| YARDIMCI METİNLER (Türkçe karakter eşleme)
-|--------------------------------------------------------------------------
-*/
 function turkishSlug(str) {
     if (!str) return "";
-    return str
-        .toLowerCase()
-        .replace(/ğ/g, "g")
-        .replace(/ü/g, "u")
-        .replace(/ş/g, "s")
-        .replace(/ı/g, "i")
-        .replace(/ö/g, "o")
-        .replace(/ç/g, "c")
+    return str.toLowerCase()
+        .replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ş/g, "s")
+        .replace(/ı/g, "i").replace(/ö/g, "o").replace(/ç/g, "c")
         .replace(/[^a-z0-0]/g, "");
 }
 
-// Oyunu Başlat
 loadMap();
