@@ -54,6 +54,7 @@ let correctCount = 0;
 let wrongCount = 0;
 let isClickable = true;
 let cityErrors = {};
+let currentCityWrongAttempts = 0; // Aktif soru için üst üste yapılan yanlış sayısı
 
 /* SÜREÇ SAYAÇLARI */
 let timerInterval = null;
@@ -84,7 +85,7 @@ const topErrorsList = document.getElementById("topErrorsList");
 const modalRestartBtn = document.getElementById("modalRestartBtn");
 const flagAnimationContainer = document.getElementById("flagAnimationContainer");
 
-/* VARSAYILAN TEMA: DARK */
+/* VARSAYILAN TEMA KONTROLÜ */
 const themeToggleBtn = document.getElementById("themeToggleBtn");
 const themeIcon = document.getElementById("themeIcon");
 
@@ -161,6 +162,7 @@ function initGame() {
     correctCount = 0;
     wrongCount = 0;
     cityErrors = {};
+    currentCityWrongAttempts = 0;
     updateStats();
     bindMapEvents();
     startTimer();
@@ -211,6 +213,9 @@ function nextQuestion() {
         return;
     }
 
+    // Yeni soruya geçerken o anki şehir için yapılan hatayı sıfırla
+    currentCityWrongAttempts = 0;
+
     const randomIndex = Math.floor(Math.random() * remainingCities.length);
     currentTargetCity = remainingCities[randomIndex];
     questionEl.textContent = currentTargetCity.name;
@@ -239,18 +244,37 @@ function handleCityClick(element, clickedCity) {
         // YANLIŞ CEVAP
         isClickable = false;
         wrongCount++;
+        currentCityWrongAttempts++;
 
-        // Hangi şehirde yanlış yapıldığını kaydet
+        // Hangi şehirde yanlış yapıldığını istatistik için kaydet
         cityErrors[currentTargetCity.name] = (cityErrors[currentTargetCity.name] || 0) + 1;
 
         element.classList.add("wrong");
-        showMessage(`Yanlış! (${clickedCity.name}) ❌`, "wrong-toast");
         updateStats();
 
-        setTimeout(() => {
-            element.classList.remove("wrong");
-            isClickable = true;
-        }, 300);
+        // 5 YANLIŞ KONTROLÜ (ŞEHİR DEĞİŞTİRME)
+        if (currentCityWrongAttempts >= 5) {
+            const skippedCity = currentTargetCity;
+
+            // Şehri listenin sonuna taşı (daha sonra tekrar sorulsun)
+            remainingCities = remainingCities.filter(c => c.id !== skippedCity.id);
+            remainingCities.push(skippedCity);
+
+            showMessage(`5 Yanlış! ${skippedCity.name} pas geçildi 🔄`, "wrong-toast");
+
+            setTimeout(() => {
+                element.classList.remove("wrong");
+                nextQuestion();
+            }, 800);
+
+        } else {
+            showMessage(`Yanlış! (${clickedCity.name}) [${currentCityWrongAttempts}/5] ❌`, "wrong-toast");
+
+            setTimeout(() => {
+                element.classList.remove("wrong");
+                isClickable = true;
+            }, 300);
+        }
     }
 }
 
@@ -283,7 +307,7 @@ function updateStats() {
     successRateEl.textContent = `${rate}%`;
 }
 
-/* OYUN SONU EKRANI, ÖZEL UNVAN VE AY-YILDIZ EFEKTİ */
+/* OYUN SONU EKRANI VE ÖN PLANDA PATLAYAN EFEKTLER */
 function showGameEndModal() {
     const total = correctCount + wrongCount;
     const rate = total === 0 ? 0 : Math.round((correctCount / total) * 100);
@@ -318,18 +342,29 @@ function showGameEndModal() {
 
     gameEndModal.classList.add("open");
 
-    // Ay-Yıldız Yumuşak Geçiş Animasyonu
+    // Ay-Yıldız Animasyon Tetikleme
     flagAnimationContainer.classList.remove("active");
     setTimeout(() => {
         flagAnimationContainer.classList.add("active");
     }, 100);
 
-    // Konfeti Efekti (Canvas Confetti)
+    // GÜÇLENDİRİLMİŞ VE ÖN PLANA ALINMIŞ KONFETİ (zIndex: 3000)
     if (typeof confetti === 'function') {
+        // Sol ve Sağ Çift Patlama (Ekranın Üstünden Aşağı Yağan)
         confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
+            particleCount: 120,
+            angle: 60,
+            spread: 80,
+            origin: { x: 0, y: 0.4 },
+            zIndex: 3000
+        });
+
+        confetti({
+            particleCount: 120,
+            angle: 120,
+            spread: 80,
+            origin: { x: 1, y: 0.4 },
+            zIndex: 3000
         });
     }
 }
@@ -339,7 +374,7 @@ function showMessage(msg, typeClass) {
     clearTimeout(toastTimeout);
     gameMessageEl.textContent = msg;
     gameMessageEl.className = `game-message show ${typeClass}`;
-    toastTimeout = setTimeout(() => { gameMessageEl.classList.remove("show"); }, 1500);
+    toastTimeout = setTimeout(() => { gameMessageEl.classList.remove("show"); }, 1800);
 }
 
 function turkishSlug(str) {
