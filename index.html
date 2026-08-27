@@ -7,13 +7,12 @@
     <meta name="description" content="KPSS Türkiye Coğrafyası Harita ve Şehir Bulma Oyunu">
     <title>Türkiye Coğrafya - İl Bil</title>
 
-    <!-- Google Fonts Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 
-    <!-- Canvas Confetti Library -->
+    <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <link rel="stylesheet" href="css/style.css">
@@ -24,32 +23,30 @@
     <!-- NAVBAR -->
     <header class="navbar">
         <div class="navbar-left">
-            <button id="menuButton" class="menu-button" type="button" aria-label="Menüyü aç">
-                ☰
-            </button>
+            <button id="menuButton" class="menu-button" type="button" aria-label="Menüyü aç">☰</button>
             <a href="#" class="logo">
-                <span class="flag">🇹🇷</span> <span>Türkiye Coğrafya</span>
+                <span class="flag">🇹🇷</span> <span class="logo-text">Türkiye Coğrafya</span>
             </a>
         </div>
 
         <div class="navbar-right">
-            <!-- DARK MODE TOGGLE -->
             <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Karanlık Mod Değiştir"
                 title="Temayı Değiştir">
                 <span id="themeIcon">☀️</span>
             </button>
 
-            <!-- GITHUB LINK -->
-            <a href="https://github.com/Goktoog/turkiye-cografya-oyunu" target="_blank" rel="noopener noreferrer"
+            <a href="https://github.com/KULLANICI_ADIN/turkiye_cografya" target="_blank" rel="noopener noreferrer"
                 class="github-nav-btn" title="GitHub Proje Sayfası">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                     <path fill-rule="evenodd" clip-rule="evenodd"
                         d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
                 </svg>
-                <span>GitHub</span>
+                <span class="btn-text">GitHub</span>
             </a>
 
-            <button id="restartBtn" class="restart-btn">🔄 Yeniden Başlat</button>
+            <button id="restartBtn" class="restart-btn" title="Yeniden Başlat">
+                <span>🔄</span> <span class="btn-text">Sıfırla</span>
+            </button>
         </div>
     </header>
 
@@ -61,30 +58,24 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active">
-                <span class="icon">🗺️</span> İl Bil (Aktif)
-            </a>
-            <a href="#" class="nav-item disabled">
-                <span class="icon">🌊</span> Göl Bil <span class="badge">Yakında</span>
-            </a>
-            <a href="#" class="nav-item disabled">
-                <span class="icon">⛰️</span> Dağ Bil <span class="badge">Yakında</span>
-            </a>
-            <a href="#" class="nav-item disabled">
-                <span class="icon">🌾</span> Tarım & Ürünler <span class="badge">Yakında</span>
-            </a>
-            <a href="#" class="nav-item disabled">
-                <span class="icon">📊</span> TÜİK Verileri <span class="badge">Yakında</span>
-            </a>
+            <a href="#" class="nav-item active"><span class="icon">🗺️</span> İl Bil (Aktif)</a>
+            <a href="#" class="nav-item disabled"><span class="icon">⛰️</span> Dağ Bil <span
+                    class="badge">Yakında</span></a>
+            <a href="#" class="nav-item disabled"><span class="icon">🌊</span> Akarsu & Göl Bil <span
+                    class="badge">Yakında</span></a>
+            <a href="#" class="nav-item disabled"><span class="icon">🌾</span> Tarım Ürünleri <span
+                    class="badge">Yakında</span></a>
+            <a href="#" class="nav-item disabled"><span class="icon">⛏️</span> Madenler <span
+                    class="badge">Yakında</span></a>
+            <a href="#" class="nav-item disabled"><span class="icon">📊</span> TÜİK Verileri <span
+                    class="badge">Yakında</span></a>
         </nav>
     </aside>
 
-    <!-- MOBILE OVERLAY -->
     <div id="overlay" class="overlay"></div>
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
-
         <section class="game-header">
             <div class="header-titles">
                 <p class="eyebrow">KPSS COĞRAFYA HAZIRLIK</p>
@@ -93,30 +84,16 @@
             </div>
 
             <div class="stats">
-                <div class="stat-card">
-                    <span class="stat-label">Süre</span>
-                    <strong id="timerDisplay" class="stat-value">00:00</strong>
-                </div>
-
-                <div class="stat-card">
-                    <span class="stat-label">Doğru</span>
-                    <strong id="correctCount" class="stat-value correct">0</strong>
-                </div>
-
-                <div class="stat-card">
-                    <span class="stat-label">Yanlış</span>
-                    <strong id="wrongCount" class="stat-value wrong">0</strong>
-                </div>
-
-                <div class="stat-card">
-                    <span class="stat-label">Kalan İller</span>
-                    <strong id="remainingCount" class="stat-value">81</strong>
-                </div>
-
-                <div class="stat-card">
-                    <span class="stat-label">Başarı</span>
-                    <strong id="successRate" class="stat-value">0%</strong>
-                </div>
+                <div class="stat-card"><span class="stat-label">Süre</span><strong id="timerDisplay"
+                        class="stat-value">00:00</strong></div>
+                <div class="stat-card"><span class="stat-label">Doğru</span><strong id="correctCount"
+                        class="stat-value correct">0</strong></div>
+                <div class="stat-card"><span class="stat-label">Yanlış</span><strong id="wrongCount"
+                        class="stat-value wrong">0</strong></div>
+                <div class="stat-card"><span class="stat-label">Kalan İller</span><strong id="remainingCount"
+                        class="stat-value">81</strong></div>
+                <div class="stat-card"><span class="stat-label">Başarı</span><strong id="successRate"
+                        class="stat-value">0%</strong></div>
             </div>
         </section>
 
@@ -137,12 +114,16 @@
             </div>
         </section>
 
-        <!-- GAME MESSAGE / TOAST NOTIFICATION -->
-        <div id="gameMessage" class="game-message" aria-live="polite"></div>
-
+        <!-- EKRAN ORTASI OVERLAY BİLDİRİMİ -->
+        <div id="centerFeedback" class="center-feedback">
+            <div class="feedback-content">
+                <span id="feedbackIcon" class="feedback-icon">👏</span>
+                <span id="feedbackText" class="feedback-text">Doğru: İstanbul</span>
+            </div>
+        </div>
     </main>
 
-    <!-- DETAYLI OYUN SONU MODAL -->
+    <!-- OYUN SONU MODAL -->
     <div id="gameEndModal" class="modal-overlay">
         <div class="modal-content">
             <div id="flagAnimationContainer" class="flag-anim-bg">🇹🇷</div>
@@ -150,24 +131,15 @@
             <div class="badge-title" id="userTitle">Coğrafya Dehası</div>
 
             <div class="modal-stats-grid">
-                <div class="m-stat">
-                    <span>Toplam Süre</span>
-                    <strong id="modalTime">00:00</strong>
-                </div>
-                <div class="m-stat">
-                    <span>Toplam Yanlış</span>
-                    <strong id="modalWrong">0</strong>
-                </div>
-                <div class="m-stat">
-                    <span>Başarı Oranı</span>
-                    <strong id="modalRate">%0</strong>
-                </div>
+                <div class="m-stat"><span>Toplam Süre</span><strong id="modalTime">00:00</strong></div>
+                <div class="m-stat"><span>Toplam Yanlış</span><strong id="modalWrong">0</strong></div>
+                <div class="m-stat"><span>Başarı Oranı</span><strong id="modalRate">%0</strong></div>
             </div>
 
             <div class="top-errors-section">
                 <h3>En Çok Hata Yapılan Şehirler</h3>
                 <ol id="topErrorsList" class="top-errors-list">
-                    <li>Hata yapılmadı! mükemmel performans.</li>
+                    <li>Hata yapılmadı!</li>
                 </ol>
             </div>
 
@@ -175,12 +147,10 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
     <footer class="footer">
         <span>© 2026 Türkiye Coğrafya KPSS Oyunları</span>
-        <a href="https://github.com/Goktoog" target="_blank" rel="noopener noreferrer">
-            GitHub
-        </a>
+        <a href="https://github.com/KULLANICI_ADIN/turkiye_cografya" target="_blank" rel="noopener noreferrer">GitHub
+            Projesi</a>
     </footer>
 
     <script src="js/app.js" defer></script>
